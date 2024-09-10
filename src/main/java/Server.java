@@ -28,8 +28,9 @@ public class Server {
     public Socket startServer() {
         try (final var serverSocket = new ServerSocket(9998)) {
             while (true) {
+                final var socket = serverSocket.accept();
 
-                newAccept(serverSocket);
+                newAccept(socket);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -37,9 +38,9 @@ public class Server {
         return null;
     }
 
-    public String newAccept(ServerSocket serverSocket) {
+    public String newAccept(Socket socket) {
         try (
-                final var socket = serverSocket.accept();
+//                final var socket = serverSocket.accept();
                 final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 final var out = new BufferedOutputStream(socket.getOutputStream());
         ) {

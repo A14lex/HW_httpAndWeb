@@ -10,6 +10,7 @@ import java.util.concurrent.*;
 public class Main {
     public static Server server;
     public static ServerSocket serverSocket;
+    public static Socket socket;
 //    Runnable runnable = new Runnable() {
 //        @Override
 //        public void run() {
@@ -20,7 +21,7 @@ public class Main {
 public static Callable<String> myCallable = new Callable<String>() {
     @Override
     public String call() throws Exception {
-       return server.newAccept(serverSocket);
+       return server.newAccept(socket);
     }
 };
 
@@ -33,6 +34,11 @@ public static Callable<String> myCallable = new Callable<String>() {
         serverSocket = server.returnSocket();
 
         while (true){
+            try {
+                socket = serverSocket.accept();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             System.out.println("Запускаем поток");
 
