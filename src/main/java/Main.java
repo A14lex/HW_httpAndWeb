@@ -1,79 +1,35 @@
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Main {
-    public static Server server;
-    public static ServerSocket serverSocket;
-    public static Socket socket;
-//    Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//           server.newAccept(serverSocket);
-//
-//        }
-//    };
-public static Callable<String> myCallable = new Callable<String>() {
-    @Override
-    public String call() throws Exception {
-       return server.newAccept(socket);
-    }
-};
-
-
+    private static Server server;
+    private static ServerSocket serverSocket;
+    private static Socket socket;
+    private static Callable<String> myCallable = new Callable<String>() {
+        @Override
+        public String call() throws Exception {
+            return server.newAccept(socket);
+        }
+    };
 
     public static void main(String[] args) {
         ExecutorService threadPool = Executors.newFixedThreadPool(64);
-        
         server = new Server();
         serverSocket = server.returnSocket();
-
-        while (true){
+        while (true) {
             try {
                 socket = serverSocket.accept();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             System.out.println("Запускаем поток");
-
-
             Future<String> task = threadPool.submit(myCallable);
-
             System.out.println("Поток запущен переходим к следующему");
         }
-        
-
-
-
-
-//        /*
-//        Это работающий код. Оставлен, чтобы помнить, что так можно
-//         */
-//        Server server = new Server();
-//        for (int i = 0; i < 3; i++) {
-//            System.out.println(i);
-//            Thread thread = new Thread(){
-//                @Override
-//                public void run() {
-//                    synchronized (server){
-//                        new Server().startServer();
-//                    }
-//
-//
-//                }
-//            };
-//            thread.start();
-//        }
-
-
     }
 }
-/*
-
- */

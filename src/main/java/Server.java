@@ -10,12 +10,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Server {
-
-
-
     static final List<String> validPaths = List.of("/index.html", "/spring.svg", "/spring.png", "/resources.html", "/styles.css", "/app.js", "/links.html", "/forms.html", "/classic.html", "/events.html", "/events.js");
 
-    public ServerSocket returnSocket(){
+    public ServerSocket returnSocket() {
         try {
             final ServerSocket serverSocket = new ServerSocket(9998);
             return serverSocket;
@@ -29,7 +26,6 @@ public class Server {
         try (final var serverSocket = new ServerSocket(9998)) {
             while (true) {
                 final var socket = serverSocket.accept();
-
                 newAccept(socket);
             }
         } catch (IOException e) {
@@ -40,20 +36,14 @@ public class Server {
 
     public String newAccept(Socket socket) {
         try (
-//                final var socket = serverSocket.accept();
                 final var in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 final var out = new BufferedOutputStream(socket.getOutputStream());
         ) {
-            // read only request line for simplicity
-            // must be in form GET /path HTTP/1.1
             final var requestLine = in.readLine();
             final var parts = requestLine.split(" ");
-
             if (parts.length != 3) {
-                // just close socket
                 return "end";
             }
-
             final var path = parts[1];
             if (!validPaths.contains(path)) {
                 out.write((
@@ -65,11 +55,8 @@ public class Server {
                 out.flush();
                 return "404";
             }
-
             final var filePath = Path.of(".", "public", path);
             final var mimeType = Files.probeContentType(filePath);
-
-            // special case for classic
             if (path.equals("/classic.html")) {
                 final var template = Files.readString(filePath);
                 final var content = template.replace(
@@ -87,7 +74,6 @@ public class Server {
                 out.flush();
                 return "200";
             }
-
             final var length = Files.size(filePath);
             out.write((
                     "HTTP/1.1 200 OK\r\n" +
